@@ -1950,6 +1950,17 @@ enum GCDAsyncUdpSocketConfig
 		int status;
 		
 		// Set socket options
+
+        int reuseport = 1;
+  		status = setsockopt(socketFD, SOL_SOCKET, SO_REUSEPORT, &reuseport, sizeof(reuseport));
+  		if (status == -1)
+  		{
+  			if (errPtr)
+  				*errPtr = [self errnoErrorWithReason:@"Error enabling port reuse (setsockopt)"];
+
+  			close(socketFD);
+  			return SOCKET_NULL;
+  		}
 		
 		status = fcntl(socketFD, F_SETFL, O_NONBLOCK);
 		if (status == -1)
